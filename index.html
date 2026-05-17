@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VisiónClara — Procesamiento para Deuteranopia</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,7 +22,7 @@
           <line x1="30" y1="20" x2="36" y2="20" stroke="var(--accent)" stroke-width="2"/>
         </svg>
       </div>
-      <span class="logo-text">VisiónClara</span>
+      <span class="logo-text">Visión<span>Clara</span></span>
     </div>
     <nav class="header-nav">
       <a href="#app"      class="nav-link active">Herramienta</a>
@@ -60,11 +60,34 @@
   <section class="app-section" id="app">
     <div class="section-label">— Herramienta</div>
     <h2 class="section-title">Procesador de imágenes</h2>
+    <p class="section-sub">
+      Sube cualquier imagen y compara cómo la ve una persona con deuteranopia frente a la versión corregida. <em>Tres pasos</em>, resultado instantáneo.
+    </p>
+
+    <!-- GUÍA DE PASOS -->
+    <div class="tool-steps-guide">
+      <div class="tool-step-item active" id="guideStep1">
+        <div class="step-num-badge">1</div>
+        <span class="step-label">Sube tu imagen</span>
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="tool-step-item" id="guideStep2">
+        <div class="step-num-badge">2</div>
+        <span class="step-label">Elige el modo</span>
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="tool-step-item" id="guideStep3">
+        <div class="step-num-badge">3</div>
+        <span class="step-label">Procesa y compara</span>
+      </div>
+    </div>
 
     <div class="app-container">
 
-      <!-- ZONA DE CARGA + CONTROLES -->
+      <!-- PANEL IZQUIERDO: carga + controles -->
       <div class="upload-panel">
+
+        <!-- PASO 1: Zona de carga -->
         <div class="upload-zone" id="uploadZone">
           <div class="upload-icon">
             <svg viewBox="0 0 60 60" fill="none">
@@ -78,20 +101,54 @@
           <input type="file" id="fileInput" accept="image/*" hidden />
         </div>
 
-        <!-- CONTROLES -->
+        <!-- PASOS 2 y 3: Controles (aparecen tras cargar imagen) -->
         <div class="controls-panel" id="controlsPanel" style="display:none">
+
+          <div class="controls-header">
+            <span class="controls-title">Configuración</span>
+          </div>
+
+          <!-- Modo: tarjetas descriptivas -->
           <div class="control-group">
-            <label class="control-label">Modo de corrección</label>
-            <div class="mode-buttons">
-              <button class="mode-btn active" data-mode="daltonize" title="Corrección LMS completa (Fidaner 2009)">Daltonize</button>
-              <button class="mode-btn" data-mode="simulate"   title="Visualizar como deuteranópico">Simulación</button>
-              <button class="mode-btn" data-mode="enhance"    title="Realce de contraste azul-amarillo">Realce</button>
+            <label class="control-label">Paso 2 — Modo de procesamiento</label>
+            <div class="mode-cards">
+              <div class="mode-card active" data-mode="daltonize">
+                <div class="mode-card-icon">🔵</div>
+                <div class="mode-card-body">
+                  <div class="mode-card-name">Daltonize</div>
+                  <div class="mode-card-desc">Corrige la imagen para que sea más fácil de ver para una persona con deuteranopia</div>
+                </div>
+              </div>
+              <div class="mode-card" data-mode="simulate">
+                <div class="mode-card-icon">👁️</div>
+                <div class="mode-card-body">
+                  <div class="mode-card-name">Simulación</div>
+                  <div class="mode-card-desc">Muestra cómo ve esta imagen una persona con deuteranopia (sin corrección)</div>
+                </div>
+              </div>
+              <div class="mode-card" data-mode="enhance">
+                <div class="mode-card-icon">✨</div>
+                <div class="mode-card-body">
+                  <div class="mode-card-name">Realce</div>
+                  <div class="mode-card-desc">Amplifica el contraste azul–amarillo, el eje cromático funcional en deuteranopia</div>
+                </div>
+              </div>
+            </div>
+            <!-- Botones ocultos para retrocompat. con script.js -->
+            <div class="mode-buttons" style="display:none">
+              <button class="mode-btn active" data-mode="daltonize">Daltonize</button>
+              <button class="mode-btn" data-mode="simulate">Simulación</button>
+              <button class="mode-btn" data-mode="enhance">Realce</button>
             </div>
           </div>
+
+          <!-- Intensidad -->
           <div class="control-group">
             <label class="control-label">Intensidad α <span id="intensityVal">100%</span></label>
             <input type="range" id="intensitySlider" min="0" max="100" value="100" class="slider"/>
           </div>
+
+          <!-- Canales -->
           <div class="control-group">
             <label class="control-label">Canal de corrección</label>
             <div class="channel-row">
@@ -100,25 +157,33 @@
               <label class="toggle-item"><input type="checkbox" id="chB">         <span>B</span></label>
             </div>
           </div>
+
+          <!-- Paso 3: Procesar -->
           <div class="action-row">
-            <button class="btn-primary" id="processBtn"><span class="btn-icon">▶</span> Procesar</button>
-            <button class="btn-secondary" id="resetBtn">↺ Reiniciar</button>
+            <button class="btn-primary" id="processBtn"><span class="btn-icon">▶</span> Paso 3 — Procesar</button>
+            <button class="btn-secondary" id="resetBtn">↺</button>
           </div>
+
         </div>
       </div>
 
-      <!-- CANVAS AREA -->
+      <!-- PANEL DERECHO: Canvas con vista y comparación -->
       <div class="canvas-area">
         <div class="canvas-tabs">
           <button class="tab active" data-tab="original">Original</button>
           <button class="tab" data-tab="processed">Corregida</button>
-          <button class="tab" data-tab="compare">◀▶ Comparar</button>
+          <button class="tab" data-tab="compare">◀▶ Comparar lado a lado</button>
         </div>
 
         <div class="canvas-wrapper" id="canvasWrapper">
           <div class="canvas-placeholder" id="canvasPlaceholder">
             <div class="placeholder-icon">👁️</div>
             <p>Tu imagen aparecerá aquí</p>
+            <div class="placeholder-tip">
+              1 · Sube una imagen a la izquierda<br>
+              2 · Elige el modo de procesamiento<br>
+              3 · Pulsa "Procesar" y compara
+            </div>
           </div>
 
           <div class="canvas-view" id="viewOriginal"  style="display:none"><canvas id="canvasOriginal"></canvas></div>
@@ -132,6 +197,10 @@
             <canvas id="canvasCompareL" style="width:50%"></canvas>
             <div class="compare-divider" id="compareDivider"><div class="divider-handle">◀▶</div></div>
             <canvas id="canvasCompareR" style="width:50%"></canvas>
+            <div class="compare-labels">
+              <span class="compare-label-badge original">Original</span>
+              <span class="compare-label-badge corrected">Corregida</span>
+            </div>
           </div>
         </div>
 

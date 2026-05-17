@@ -569,6 +569,7 @@ function loadImage(file) {
       statMode.textContent = '—';
       downloadBtn.style.display = 'none';
       setTab('original');
+      if (typeof updateStepGuide === 'function') updateStepGuide(2);
     };
     img.src = e.target.result;
   };
@@ -602,6 +603,9 @@ function runProcessing() {
     downloadBtn.style.display = 'inline-block';
 
     processingOverlay.style.display = 'none';
+    if (typeof updateStepGuide === 'function') updateStepGuide(3);
+    // Auto-cambiar a vista de comparación al procesar
+    setTab('compare');
   }, 80);
 }
 
@@ -822,7 +826,7 @@ uploadZone.addEventListener('drop', e => {
 uploadZone.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => { if (e.target.files[0]) loadImage(e.target.files[0]); });
 
-// Botones de modo
+// Botones de modo (compatibilidad)
 document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -830,6 +834,28 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     state.mode = btn.dataset.mode;
   });
 });
+
+// Tarjetas de modo (nuevo UI)
+document.querySelectorAll('.mode-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    state.mode = card.dataset.mode;
+    // Sincronizar con botones ocultos
+    document.querySelectorAll('.mode-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.mode === card.dataset.mode)
+    );
+  });
+});
+
+// Guía de pasos — activar visualmente
+function updateStepGuide(step) {
+  document.querySelectorAll('.tool-step-item').forEach((el, i) => {
+    el.classList.remove('active', 'done');
+    if (i + 1 < step) el.classList.add('done');
+    if (i + 1 === step) el.classList.add('active');
+  });
+}
 
 // Slider de intensidad
 intensitySlider.addEventListener('input', e => {
@@ -861,7 +887,9 @@ resetBtn.addEventListener('click', () => {
   state.intensity = 1.0;
   intensityVal.textContent = '100%';
   document.querySelectorAll('.mode-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  document.querySelectorAll('.mode-card').forEach((c, i) => c.classList.toggle('active', i === 0));
   state.mode = 'daltonize';
+  if (typeof updateStepGuide === 'function') updateStepGuide(1);
 });
 
 // Tabs de canvas
