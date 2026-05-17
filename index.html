@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisiónClara — Procesamiento para Deuteranopia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="var(--accent)" stroke-width="2.5"/>
+          <ellipse cx="20" cy="20" rx="8" ry="8" fill="var(--accent)" opacity="0.2"/>
+          <circle cx="20" cy="20" r="4" fill="var(--accent)"/>
+          <line x1="4" y1="20" x2="10" y2="20" stroke="var(--accent)" stroke-width="2"/>
+          <line x1="30" y1="20" x2="36" y2="20" stroke="var(--accent)" stroke-width="2"/>
+        </svg>
+      </div>
+      <span class="logo-text">VisiónClara</span>
+    </div>
+    <nav class="header-nav">
+      <a href="#app"      class="nav-link active">Herramienta</a>
+      <a href="#segmenta" class="nav-link">Segmentación</a>
+      <a href="#formulas" class="nav-link">Algoritmo</a>
+      <a href="#info"     class="nav-link">Metodología</a>
+      <a href="#about"    class="nav-link">Acerca de</a>
+    </nav>
+    <div class="header-badge">UNMG · 2026</div>
+  </header>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║           HERO               ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="hero">
+    <div class="hero-tag">Procesamiento Digital de Imágenes · Deuteranopia</div>
+    <h1 class="hero-title">Transforma cómo<br><em>ves el color</em></h1>
+    <p class="hero-sub">Herramienta de corrección cromática basada en el modelo LMS de conos retinales. Convierte imágenes para mejorar la percepción de personas con deuteranopia mediante algoritmos de recolorización y segmentación K-means.</p>
+    <div class="hero-cta-row">
+      <a href="#app"      class="cta-btn">Usar herramienta ↓</a>
+      <a href="#segmenta" class="cta-btn-outline">Segmentación K-means</a>
+    </div>
+    <div class="hero-pills">
+      <span class="pill">🔵 Espacio LMS</span>
+      <span class="pill">⚡ Tiempo real</span>
+      <span class="pill">🧩 K-means</span>
+      <span class="pill">📐 Daltonize</span>
+      <span class="pill">♿ Accesible</span>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║     HERRAMIENTA PRINCIPAL    ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="app-section" id="app">
+    <div class="section-label">— Herramienta</div>
+    <h2 class="section-title">Procesador de imágenes</h2>
+
+    <div class="app-container">
+
+      <!-- ZONA DE CARGA + CONTROLES -->
+      <div class="upload-panel">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">
+            <svg viewBox="0 0 60 60" fill="none">
+              <rect x="5" y="15" width="50" height="38" rx="6" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="6 4"/>
+              <path d="M30 8 L30 38 M20 18 L30 8 L40 18" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="30" cy="42" r="3" fill="var(--accent)" opacity="0.5"/>
+            </svg>
+          </div>
+          <p class="upload-text">Arrastra tu imagen aquí<br><span>o haz clic para seleccionar</span></p>
+          <p class="upload-hint">PNG, JPG, WEBP — Máx. 10 MB</p>
+          <input type="file" id="fileInput" accept="image/*" hidden />
+        </div>
+
+        <!-- CONTROLES -->
+        <div class="controls-panel" id="controlsPanel" style="display:none">
+          <div class="control-group">
+            <label class="control-label">Modo de corrección</label>
+            <div class="mode-buttons">
+              <button class="mode-btn active" data-mode="daltonize" title="Corrección LMS completa (Fidaner 2009)">Daltonize</button>
+              <button class="mode-btn" data-mode="simulate"   title="Visualizar como deuteranópico">Simulación</button>
+              <button class="mode-btn" data-mode="enhance"    title="Realce de contraste azul-amarillo">Realce</button>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Intensidad α <span id="intensityVal">100%</span></label>
+            <input type="range" id="intensitySlider" min="0" max="100" value="100" class="slider"/>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Canal de corrección</label>
+            <div class="channel-row">
+              <label class="toggle-item"><input type="checkbox" id="chR" checked> <span>R</span></label>
+              <label class="toggle-item"><input type="checkbox" id="chG" checked> <span>G</span></label>
+              <label class="toggle-item"><input type="checkbox" id="chB">         <span>B</span></label>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-primary" id="processBtn"><span class="btn-icon">▶</span> Procesar</button>
+            <button class="btn-secondary" id="resetBtn">↺ Reiniciar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANVAS AREA -->
+      <div class="canvas-area">
+        <div class="canvas-tabs">
+          <button class="tab active" data-tab="original">Original</button>
+          <button class="tab" data-tab="processed">Corregida</button>
+          <button class="tab" data-tab="compare">◀▶ Comparar</button>
+        </div>
+
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <div class="canvas-placeholder" id="canvasPlaceholder">
+            <div class="placeholder-icon">👁️</div>
+            <p>Tu imagen aparecerá aquí</p>
+          </div>
+
+          <div class="canvas-view" id="viewOriginal"  style="display:none"><canvas id="canvasOriginal"></canvas></div>
+          <div class="canvas-view" id="viewProcessed" style="display:none">
+            <canvas id="canvasProcessed"></canvas>
+            <div class="processing-overlay" id="processingOverlay" style="display:none">
+              <div class="spinner"></div><p>Procesando…</p>
+            </div>
+          </div>
+          <div class="canvas-view compare-view" id="viewCompare" style="display:none">
+            <canvas id="canvasCompareL" style="width:50%"></canvas>
+            <div class="compare-divider" id="compareDivider"><div class="divider-handle">◀▶</div></div>
+            <canvas id="canvasCompareR" style="width:50%"></canvas>
+          </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar" style="display:none">
+          <div class="stat-item"><span class="stat-label">Dimensiones</span><span class="stat-val" id="statDim">—</span></div>
+          <div class="stat-item"><span class="stat-label">Píxeles afectados</span><span class="stat-val" id="statPx">—</span></div>
+          <div class="stat-item"><span class="stat-label">Modo</span><span class="stat-val" id="statMode">—</span></div>
+          <button class="download-btn" id="downloadBtn" style="display:none">⬇ Descargar PNG</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║   SEGMENTACIÓN K-MEANS       ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="seg-section" id="segmenta">
+    <div class="section-label">— Segmentación por región</div>
+    <h2 class="section-title">K-means Segmentation</h2>
+    <p class="section-sub">
+      Divide la imagen en <em>k</em> regiones de color similares mediante el algoritmo K-means.
+      Selecciona una o más regiones para aplicar la corrección <strong>solo</strong> a esa zona,
+      manteniendo el resto de la imagen sin modificar.
+    </p>
+
+    <div class="seg-container">
+
+      <!-- PANEL IZQUIERDO: carga + controles -->
+      <div class="seg-left-panel">
+
+        <!-- Upload -->
+        <div class="upload-zone seg-upload" id="segUploadZone">
+          <div class="upload-icon" style="margin-bottom:0.5rem">
+            <svg viewBox="0 0 60 60" fill="none" style="width:40px;height:40px">
+              <rect x="5" y="15" width="50" height="38" rx="6" stroke="var(--accent-2)" stroke-width="2.5" stroke-dasharray="6 4"/>
+              <path d="M30 8 L30 38 M20 18 L30 8 L40 18" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="upload-text" style="font-size:0.85rem">Cargar imagen para segmentar<br><span style="color:var(--accent-2)">o haz clic aquí</span></p>
+          <input type="file" id="segFileInput" accept="image/*" hidden />
+        </div>
+
+        <!-- Controles K-means -->
+        <div class="seg-controls">
+          <div class="control-group">
+            <label class="control-label">
+              Número de segmentos k
+              <span id="segKVal" class="accent-badge">5</span>
+            </label>
+            <input type="range" id="segKSlider" min="2" max="8" value="5" class="slider"/>
+            <div class="slider-ticks">
+              <span>2</span><span>3</span><span>4</span><span>5</span>
+              <span>6</span><span>7</span><span>8</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Modo de corrección</label>
+            <select id="segModeSelect" class="select-input">
+              <option value="daltonize">Daltonize LMS</option>
+              <option value="simulate">Simulación deuteranopia</option>
+              <option value="enhance">Realce azul–amarillo</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Intensidad α <span id="segIntensityVal">100%</span></label>
+            <input type="range" id="segIntensity" min="0" max="100" value="100" class="slider"/>
+          </div>
+
+          <div class="seg-action-row">
+            <button class="btn-primary" id="segBtn" style="background:var(--accent-2);color:#fff">
+              ⬡ Segmentar
+            </button>
+            <button class="btn-secondary" id="segClearBtn">✕ Limpiar selección</button>
+          </div>
+
+          <button class="btn-apply" id="applySegBtn" disabled>
+            ▶ Aplicar corrección al segmento
+          </button>
+
+          <!-- Barra de progreso K-means -->
+          <div class="seg-progress" id="segProgress" style="display:none">
+            <div class="seg-progress-label">K-means iterando…</div>
+            <div class="seg-progress-track">
+              <div class="seg-progress-bar" id="segProgressBar" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Info dinámica -->
+          <div class="seg-info-box">
+            <span id="segInfoText">Carga una imagen para comenzar.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL DERECHO: canvases -->
+      <div class="seg-right-panel">
+        <div class="seg-placeholder" id="segPlaceholder">
+          <div class="placeholder-icon" style="font-size:2.5rem">🧩</div>
+          <p>La segmentación aparecerá aquí</p>
+        </div>
+
+        <div class="seg-canvas-area" id="segResultArea" style="display:none">
+          <!-- Fila superior: imagen original + overlay -->
+          <div class="seg-row">
+            <div class="seg-canvas-label">Original + segmentos</div>
+            <div class="seg-canvas-wrap">
+              <canvas id="segCanvasOrig"></canvas>
+              <canvas id="segCanvasOverlay" class="seg-overlay-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Leyenda de clusters -->
+          <div class="seg-legend" id="segLegend" style="display:none"></div>
+
+          <!-- Fila inferior: resultado -->
+          <div class="seg-row" style="margin-top:1rem">
+            <div class="seg-canvas-label">Resultado — corrección selectiva</div>
+            <div class="seg-canvas-wrap">
+              <canvas id="segCanvasResult"></canvas>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.6rem">
+              <button class="download-btn" id="downloadSegBtn" style="display:none">⬇ Descargar resultado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║   FUNDAMENTO MATEMÁTICO      ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="formulas-section" id="formulas">
+    <div class="section-label">— Fundamento matemático</div>
+    <h2 class="section-title">Algoritmos y fórmulas</h2>
+    <p class="section-sub">Base matemática del procesamiento digital implementado en VisiónClara.</p>
+
+    <div class="formula-grid">
+
+      <!-- FÓRMULA 1: RGB → LMS -->
+      <div class="formula-card">
+        <div class="formula-tag">Transformación lineal</div>
+        <h3 class="formula-title">RGB → Espacio LMS</h3>
+        <div class="formula-eq">
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <div class="mat-col labels"><div>L</div><div>M</div><div>S</div></div>
+            <div class="mat-bracket right">]</div>
+          </div>
+          <div class="eq-sign">=</div>
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <table class="mat-table">
+              <tr><td>17.882</td><td>43.516</td><td>4.119</td></tr>
+              <tr><td>3.456</td><td>27.155</td><td>3.867</td></tr>
+              <tr><td>0.030</td><td>0.184</td><td>1.467</td></tr>
+            </table>
+            <div class="mat-bracket right">]</div>
+          </div>
+          <div class="mat-dot">·</div>
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <div class="mat-col labels"><div>R</div><div>G</div><div>B</div></div>
+            <div class="mat-bracket right">]</div>
+          </div>
+        </div>
+        <p class="formula-desc">Transforma el espacio RGB al espacio LMS (Long-Medium-Short) que modela la respuesta espectral de los fotorreceptores cónicos de la retina. Basada en el modelo Hunt-Pointer-Estévez.</p>
+      </div>
+
+      <!-- FÓRMULA 2: Simulación deuteranopia -->
+      <div class="formula-card">
+        <div class="formula-tag">Proyección LMS</div>
+        <h3 class="formula-title">Simulación de deuteranopia</h3>
+        <div class="formula-eq">
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <div class="mat-col labels"><div>L'</div><div>M'</div><div>S'</div></div>
+            <div class="mat-bracket right">]</div>
+          </div>
+          <div class="eq-sign">=</div>
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <table class="mat-table">
+              <tr><td>1.000</td><td class="mat-zero">0.000</td><td class="mat-zero">0.000</td></tr>
+              <tr><td class="mat-accent">0.494</td><td class="mat-zero">0.000</td><td class="mat-accent">1.248</td></tr>
+              <tr><td class="mat-zero">0.000</td><td class="mat-zero">0.000</td><td>1.000</td></tr>
+            </table>
+            <div class="mat-bracket right">]</div>
+          </div>
+          <div class="mat-dot">·</div>
+          <div class="mat-bracket-group">
+            <div class="mat-bracket left">[</div>
+            <div class="mat-col labels"><div>L</div><div>M</div><div>S</div></div>
+            <div class="mat-bracket right">]</div>
+          </div>
+        </div>
+        <p class="formula-desc">Los conos M (verdes, ~530 nm) son no funcionales. Su respuesta se reemplaza con: <code>M' = 0.4942·L + 1.2483·S</code>, combinación de los canales aún funcionales.</p>
+      </div>
+
+      <!-- FÓRMULA 3: Error y corrección Daltonize -->
+      <div class="formula-card formula-card--wide">
+        <div class="formula-tag">Daltonize · Fidaner & Çadallı, 2009</div>
+        <h3 class="formula-title">Redistribución del error de percepción</h3>
+        <div class="daltonize-steps">
+          <div class="dstep">
+            <div class="dstep-num">①</div>
+            <div class="dstep-body">
+              <div class="dstep-label">Error de percepción</div>
+              <div class="dstep-eq">
+                <code>E = RGB<sub>orig</sub> − RGB<sub>sim</sub></code>
+              </div>
+            </div>
+          </div>
+          <div class="dstep-arrow">→</div>
+          <div class="dstep">
+            <div class="dstep-num">②</div>
+            <div class="dstep-body">
+              <div class="dstep-label">Redistribuir hacia G, B</div>
+              <div class="formula-eq" style="margin-top:0.4rem; flex-wrap:wrap; gap:0.3rem">
+                <div class="mat-bracket-group small">
+                  <div class="mat-bracket left">[</div>
+                  <div class="mat-col labels small"><div>ΔR</div><div>ΔG</div><div>ΔB</div></div>
+                  <div class="mat-bracket right">]</div>
+                </div>
+                <div class="eq-sign">=</div>
+                <div class="mat-bracket-group small">
+                  <div class="mat-bracket left">[</div>
+                  <table class="mat-table small">
+                    <tr><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+                    <tr><td class="mat-accent">0.7</td><td>1.0</td><td>0.0</td></tr>
+                    <tr><td class="mat-accent">0.7</td><td>0.0</td><td>1.0</td></tr>
+                  </table>
+                  <div class="mat-bracket right">]</div>
+                </div>
+                <div class="mat-dot">·</div>
+                <div class="mat-bracket-group small">
+                  <div class="mat-bracket left">[</div>
+                  <div class="mat-col labels small"><div>E_r</div><div>E_g</div><div>E_b</div></div>
+                  <div class="mat-bracket right">]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dstep-arrow">→</div>
+          <div class="dstep">
+            <div class="dstep-num">③</div>
+            <div class="dstep-body">
+              <div class="dstep-label">Resultado final con α</div>
+              <div class="dstep-eq">
+                <code>RGB<sub>out</sub> = RGB<sub>orig</sub> + α · ΔC</code>
+              </div>
+              <div class="dstep-note">α ∈ [0, 1] = intensidad</div>
+            </div>
+          </div>
+        </div>
+        <p class="formula-desc" style="margin-top:1rem">Los errores en el canal rojo son desplazados hacia verde y azul, que el sistema deuteranópico distingue mediante el eje L–S (azul–amarillo).</p>
+      </div>
+
+      <!-- FÓRMULA 4: K-means objetivo -->
+      <div class="formula-card">
+        <div class="formula-tag">Segmentación · Lloyd, 1957</div>
+        <h3 class="formula-title">Función objetivo K-means</h3>
+        <div class="formula-display">
+          <div class="big-formula">
+            J = <span class="sum-sym">Σ</span><sub>k=1</sub><sup>K</sup>
+            <span class="sum-sym">Σ</span><sub>x∈C<sub>k</sub></sub>
+            ‖x − μ<sub>k</sub>‖²
+          </div>
+        </div>
+        <div class="formula-legend">
+          <div class="fleg-item"><code>K</code> — número de clusters (segmentos)</div>
+          <div class="fleg-item"><code>x</code> — vector RGB del píxel [R, G, B]</div>
+          <div class="fleg-item"><code>μₖ</code> — centroide del cluster k</div>
+          <div class="fleg-item"><code>‖·‖²</code> — distancia euclidiana al cuadrado</div>
+        </div>
+        <p class="formula-desc">Minimizar J hace que los píxeles de cada cluster sean lo más similares posible en color. Usamos inicialización K-means++ para acelerar la convergencia.</p>
+      </div>
+
+      <!-- FÓRMULA 5: Distancia euclidiana -->
+      <div class="formula-card">
+        <div class="formula-tag">Métrica de color</div>
+        <h3 class="formula-title">Distancia en espacio RGB</h3>
+        <div class="formula-display">
+          <div class="big-formula mid">
+            d(p, q) = √<span class="sqrt-inner">(R<sub>1</sub>−R<sub>2</sub>)² + (G<sub>1</sub>−G<sub>2</sub>)² + (B<sub>1</sub>−B<sub>2</sub>)²</span>
+          </div>
+        </div>
+        <p class="formula-desc">Distancia euclidiana usada tanto en K-means para asignar píxeles al centroide más cercano, como para medir la diferencia perceptual entre colores en el espacio RGB.</p>
+        <div class="formula-display" style="margin-top:0.75rem">
+          <div class="big-formula mid" style="font-size:0.85rem">
+            K-means++: P(x) ∝ d²(x, C)
+          </div>
+        </div>
+        <p class="formula-desc">La inicialización K-means++ selecciona el siguiente centroide con probabilidad proporcional a d², reduciendo iteraciones y mejorando la convergencia.</p>
+      </div>
+
+      <!-- FÓRMULA 6: Gamma / linealización -->
+      <div class="formula-card">
+        <div class="formula-tag">Codificación de color</div>
+        <h3 class="formula-title">Corrección gamma sRGB</h3>
+        <div class="formula-display">
+          <div class="gamma-formulas">
+            <div class="gamma-row">
+              <span class="gamma-cond">C ≤ 0.04045:</span>
+              <code>C<sub>lin</sub> = C / 12.92</code>
+            </div>
+            <div class="gamma-row">
+              <span class="gamma-cond">C &gt; 0.04045:</span>
+              <code>C<sub>lin</sub> = ((C + 0.055) / 1.055)<sup>2.4</sup></code>
+            </div>
+          </div>
+        </div>
+        <p class="formula-desc">La gamma de sRGB (γ ≈ 2.2) es una codificación perceptual no lineal. Al aplicar transformaciones matriciales LMS se requiere linearizar primero, y re-codificar al final.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║       METODOLOGÍA            ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="info-section" id="info">
+    <div class="section-label">— Metodología</div>
+    <h2 class="section-title">¿Cómo funciona?</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>Carga de imagen</h3>
+        <p>La imagen es leída desde el dispositivo con FileReader API y pintada en un canvas HTML5, extrayendo el ImageData con los cuatro canales RGBA de cada píxel.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>RGB → Espacio LMS</h3>
+        <p>Se transforma al espacio LMS (Long-Medium-Short) que modela la respuesta de los conos retinales usando la matriz M<sub>RGB→LMS</sub> de Viénot et al. (1999).</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>Proyección deuteranopia</h3>
+        <p>La matriz de proyección elimina la señal del canal M (conos verdes) y lo recalcula como M' = 0.4942·L + 1.2483·S, simulando la percepción deuteranópica.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <h3>Cálculo del error</h3>
+        <p>El error E = RGB<sub>orig</sub> − RGB<sub>sim</sub> cuantifica la diferencia de percepción. Representa la información de color "perdida" por la deficiencia.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">05</div>
+        <h3>Redistribución Daltonize</h3>
+        <p>La matriz de desplazamiento M<sub>shift</sub> redirige el error hacia los canales G y B, que el eje L–S (azul–amarillo) del sistema visual deuteranópico sí percibe.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">06</div>
+        <h3>Segmentación K-means</h3>
+        <p>Agrupamiento iterativo que minimiza J = Σ‖x − μₖ‖². Inicialización K-means++, muestreo de píxeles para velocidad, y asignación final de todos los píxeles a su centroide más cercano.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║        ACERCA DE             ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <section class="about-section" id="about">
+    <div class="section-label">— Proyecto universitario</div>
+    <h2 class="section-title">Acerca del proyecto</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>Este proyecto fue desarrollado en el marco del curso de <strong>Procesamiento Digital de Imágenes</strong> en la Universidad Militar Nueva Granada (Bogotá, Colombia), con el objetivo de mejorar la accesibilidad visual para personas con deuteranopia.</p>
+        <p>La deuteranopia es un tipo de daltonismo que afecta ~1% de la población masculina. Las personas con esta condición carecen de fotorreceptores M funcionales (~530 nm), dificultando la diferenciación de colores en el espectro rojo-verde.</p>
+        <p>Nuestra aplicación combina el algoritmo <strong>Daltonize</strong> basado en el modelo LMS con <strong>segmentación K-means</strong> para aplicar correcciones selectivas por región de color, maximizando la utilidad práctica.</p>
+        <div class="team-list">
+          <div class="team-member">
+            <div class="avatar">JC</div>
+            <div>
+              <strong>Johan Santiago Cárdenas Mancera</strong>
+              <span>Desarrollador</span>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="avatar">JB</div>
+            <div>
+              <strong>Jhon Sebastián Blandón Pérez</strong>
+              <span>Desarrollador</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="color-demo">
+        <div class="demo-label">Simulación de percepción cromática</div>
+        <div class="color-bars">
+          <div class="color-row">
+            <span class="cbar-label">Visión normal</span>
+            <div class="cbars">
+              <div class="cbar" style="background:#e74c3c" title="Rojo"></div>
+              <div class="cbar" style="background:#2ecc71" title="Verde"></div>
+              <div class="cbar" style="background:#3498db" title="Azul"></div>
+              <div class="cbar" style="background:#f39c12" title="Naranja"></div>
+              <div class="cbar" style="background:#9b59b6" title="Violeta"></div>
+            </div>
+          </div>
+          <div class="color-row">
+            <span class="cbar-label">Deuteranopia (sin corrección)</span>
+            <div class="cbars">
+              <div class="cbar" style="background:#8B7353"></div>
+              <div class="cbar" style="background:#7A7A3A"></div>
+              <div class="cbar" style="background:#3498db"></div>
+              <div class="cbar" style="background:#C8A800"></div>
+              <div class="cbar" style="background:#5A5A9B"></div>
+            </div>
+          </div>
+          <div class="color-row">
+            <span class="cbar-label">Con corrección Daltonize</span>
+            <div class="cbars">
+              <div class="cbar" style="background:#cc4400"></div>
+              <div class="cbar" style="background:#00b86e"></div>
+              <div class="cbar" style="background:#3498db"></div>
+              <div class="cbar" style="background:#e8a000"></div>
+              <div class="cbar" style="background:#6644bb"></div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-note">
+          El eje azul–amarillo (L–S) permanece funcional en la deuteranopia.
+          Daltonize redistribuye el error de percepción hacia ese eje.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>VisiónClara · Universidad Militar Nueva Granada · 2026</p>
+    <p class="footer-sub">Procesamiento Digital de Imágenes — Facultad de Ingeniería · Ingeniería Multimedia</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
